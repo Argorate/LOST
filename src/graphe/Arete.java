@@ -4,14 +4,10 @@ public class Arete {
 	private Graphe monGraphe;
 	private Sommet sommet1;
 	private Sommet sommet2;
-	
-	//UTILISER LE GRAPHE DES SOMMETS (qui doit etre le meme)
-	public Arete(Sommet s1, Sommet s2)
+		
+	public Arete()
 	{
-		monGraphe = g;
-		g.addArete(this);
-		sommet1 = s1;
-		sommet2 = s2;
+		monGraphe = null;
 	}
 	
 	public Arete(Graphe g)
@@ -20,10 +16,21 @@ public class Arete {
 		g.addArete(this);
 	}
 	
-	public Arete()
+	public Arete(Sommet s1, Sommet s2)
 	{
-		monGraphe = null;
-		g.addArete(this);
+		if(s1.getMonGraphe() == s2.getMonGraphe())
+		{
+			setMonGraphe(s1.getMonGraphe());
+			sommet1 = s1;
+			sommet2 = s2;
+			
+			s1.syncroAddArete(this);
+			s2.syncroAddArete(this);
+		}
+		else
+		{
+			System.out.println("[Arete]ERREUR Création Arete ! S1 et S2 on des Graphes différent.");
+		}
 	}
 	
 	//###################### GRAPHES ######################
@@ -34,12 +41,15 @@ public class Arete {
 	
 	public void setMonGraphe(Graphe g)
 	{
-		//SUPPR CE SOMMET DE L'ANCIEN GRAPHE
-		if(monGraphe != null) monGraphe.removeArete(this);
+		if(g != null)
+		{
+			if(g != monGraphe && monGraphe != null) monGraphe.removeArete(this); //SUPPR CET ARETE DE L'ANCIEN GRAPHE
+			g.syncroAddArete(this);
+		}
 		
 		monGraphe = g;
 		
-		System.out.println("setMonGraphe() dans Arete de "+ g.toString() +" s'est bien passé !");
+		System.out.println("[Arete]setMonGraphe() dans Arete de "+ g.toString() +" s'est bien passé !");
 	}
 	
 	//###################### SOMMET 1 ######################
@@ -57,12 +67,12 @@ public class Arete {
 			
 			sommet1 = s;
 			
-			System.out.println("setSommet1() de "+ s.toString() +" s'est bien passé !");
+			System.out.println("[Arete]setSommet1() de "+ s.toString() +" s'est bien passé !");
 			return true;
 		}
 		else
 		{
-			System.out.println("ERREUR ! setSommet1() de "+ s.toString() +" n'a pas réussi !");
+			System.out.println("[Arete]ERREUR ! setSommet1() de "+ s.toString() +" n'a pas réussi !");
 			return false;
 		}
 	}
@@ -82,12 +92,54 @@ public class Arete {
 			
 			sommet2 = s;
 			
-			System.out.println("setSommet2() de "+ s.toString() +" s'est bien passé !");
+			System.out.println("[Arete]setSommet2() de "+ s.toString() +" s'est bien passé !");
 			return true;
 		}
 		else
 		{
-			System.out.println("ERREUR ! setSommet2() de "+ s.toString() +" n'a pas réussi !");
+			System.out.println("[Arete]ERREUR ! setSommet2() de "+ s.toString() +" n'a pas réussi !");
+			return false;
+		}
+	}
+	
+	//###################### ADD SOMMETS ######################
+	public void addSommets(Sommet s1, Sommet s2)
+	{
+		//si l'arrete avait déjà des sommets, on enlève this de ceux-ci
+		sommet1.removeArete(this);
+		sommet2.removeArete(this);
+		
+		monGraphe = s1.getMonGraphe();
+		sommet1 = s1;
+		sommet2 = s2;
+		
+		System.out.println("[Arete]addSommets() de "+ s1.toString() +" et de "+ s2.toString() +" s'est bien passé !");
+	}
+	
+	//###################### REMOVE ######################
+	public void remove()
+	{
+		sommet1.removeArete(this);
+		sommet2.removeArete(this);
+		
+		monGraphe = null;
+		sommet1 = null;
+		sommet2 = null;
+	}
+	
+	public boolean removeSommet(Sommet s)
+	{
+		if(sommet1 == s || sommet2 == s)
+		{
+			if(sommet1 == s) sommet1 = null;
+			else sommet2 = null;
+			
+			System.out.println("[Arete]removeSommet() de "+ s.toString() +" s'est bien passé !");
+			return true;
+		}
+		else
+		{
+			System.out.println("[Arete]ERREUR ! removeSommet() de "+ s.toString() +" n'a pas réussi !");
 			return false;
 		}
 	}
